@@ -1,178 +1,136 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct NoArvore
-{
-    int dado;
-    struct NoArvore *esquerda;
-    struct NoArvore *direita;
-};
+// Aluno : Yuri Salim CC6M
 
-struct NoArvore *criarNo(int dado)
-{
-    struct NoArvore *novoNo = (struct NoArvore *)malloc(sizeof(struct NoArvore));
-    if (novoNo == NULL)
-    {
-        printf("Erro: Falha ao alocar memória para o novo nó.\n");
-        exit(-1);
-    }
-    novoNo->dado = dado;
-    novoNo->esquerda = NULL;
-    novoNo->direita = NULL;
-    return novoNo;
+typedef struct no{
+    int num;
+    struct no *dir;
+    struct no *esq;
+}no;
+
+no *criar_no(int num){
+  no *novo = (no*)malloc(sizeof(no));
+  if (novo != NULL) {
+      novo->num = num;
+      novo->dir = NULL;
+      novo->esq = NULL;
+  }
+  return novo;
 }
 
-struct NoArvore *inserir(struct NoArvore *raiz, int dado)
-{
-    if (raiz == NULL)
-    {
-        raiz = criarNo(dado);
-    }
-    else
-    {
-        if (dado <= raiz->dado)
-        {
-            raiz->esquerda = inserir(raiz->esquerda, dado);
-        }
-        else
-        {
-            raiz->direita = inserir(raiz->direita, dado);
-        }
-    }
+no *inserir(no *raiz, int num){
+  if (raiz == NULL){
+      return criar_no(num);
+  } else {
+      if (num < raiz->num){
+          raiz->esq = inserir(raiz->esq, num);
+      } else {
+          raiz->dir = inserir(raiz->dir, num);
+      }
+      return raiz;
+  }
+}
+
+void pesquisa(no *raiz, int num){
+  if (raiz == NULL){
+      printf("Não encontrado\n");
+  } else {
+      if (num < raiz->num){
+          pesquisa(raiz->esq, num);
+      } else if (num > raiz->num){
+          pesquisa(raiz->dir, num);
+      } else {
+          printf("Encontrado\n");
+      }
+  }
+}
+
+no *remover(no *raiz, int num){
+  if (raiz == NULL){
     return raiz;
+  }
+  if (num < raiz->num){
+    raiz->esq = remover(raiz->esq, num);
+  } else if (num > raiz->num){
+    raiz->dir = remover(raiz->dir, num);
+  } else {
+    // folha
+    if (raiz->esq == NULL && raiz->dir == NULL){
+      free(raiz);
+      raiz = NULL;
+    }
+    // 1 filho
+    else if (raiz->esq == NULL){
+      no *temp = raiz->dir;
+      free(raiz);
+      raiz = temp;
+    } else if (raiz->dir == NULL){
+      no *temp = raiz->esq;
+      free(raiz);
+      raiz = temp;
+    }
+    // 2 filhos
+    else{
+      no *temp = raiz->dir;
+      while (temp->esq != NULL){
+        temp = temp->esq;
+      }
+      raiz->num = temp->num;
+      raiz->dir = remover(raiz->dir, temp->num);
+    }
+  }
+  return raiz;
 }
 
-struct NoArvore *encontrarMinimo(struct NoArvore *raiz)
-{
-    struct NoArvore *atual = raiz;
-    while (atual->esquerda != NULL)
-    {
-        atual = atual->esquerda;
+int medirAltura(no *raiz, int alt){
+  if (raiz == NULL){
+    return -1;
+  }
+  else{
+    if(raiz->esq == NULL && raiz->dir == NULL){
+      return alt;
     }
-    return atual;
+    int esq = medirAltura(raiz->esq, alt+1);
+    int dir = medirAltura(raiz->dir, alt+1);
+    if(esq > dir){
+      return esq;
+    } else {
+      return dir;
+    }
+  }
 }
 
-struct NoArvore *excluir(struct NoArvore *raiz, int valor)
-{
-    if (raiz == NULL)
-    {
-        return raiz;
+int main(void) {
+  no *raiz = NULL;
+  int opcao, num;
+  do{
+    printf("-----------------\n");
+    printf("1 - Inserir\n");
+    printf("2 - Pesquisar\n");
+    printf("3 - Remover\n");
+    printf("4 - Ver Altura\n");
+    printf("0 - Sair\n");
+    printf("-----------------\n");
+    scanf("%d", &opcao);
+    if(opcao == 1){
+      printf("Digite um número: ");
+      scanf("%d", &num);
+      raiz = inserir(raiz, num);
     }
-
-    if (valor < raiz->dado)
-    {
-        raiz->esquerda = excluir(raiz->esquerda, valor);
+    if(opcao == 2){
+      printf("Digite um número: ");
+      scanf("%d", &num);
+      pesquisa(raiz, num);
     }
-    else if (valor > raiz->dado)
-    {
-        raiz->direita = excluir(raiz->direita, valor);
+    if(opcao == 3){
+      printf("Digite um número: ");
+      scanf("%d", &num);
+      raiz = remover(raiz, num);
     }
-    else
-    {
-        // Caso 1: Nó folha ou nó com apenas um filho
-        if (raiz->esquerda == NULL)
-        {
-            struct NoArvore *temp = raiz->direita;
-            free(raiz);
-            return temp;
-        }
-        else if (raiz->direita == NULL)
-        {
-            struct NoArvore *temp = raiz->esquerda;
-            free(raiz);
-            return temp;
-        }
-
-        // Caso 2: Nó com dois filhos, encontra o sucessor in-order (menor valor na subárvore direita)
-        struct NoArvore *temp = encontrarMinimo(raiz->direita);
-        raiz->dado = temp->dado;
-        raiz->direita = excluir(raiz->direita, temp->dado);
+    if(opcao == 4){
+      printf("Altura: %d\n", medirAltura(raiz, 0));
     }
-    return raiz;
-}
-
-void percorrerEmOrdem(struct NoArvore *raiz)
-{
-    if (raiz != NULL)
-    {
-        percorrerEmOrdem(raiz->esquerda);
-        printf("%d ", raiz->dado);
-        percorrerEmOrdem(raiz->direita);
-    }
-}
-
-void percorrerPreOrdem(struct NoArvore *raiz)
-{
-    if (raiz != NULL)
-    {
-        printf("%d ", raiz->dado);
-        percorrerEmOrdem(raiz->esquerda);
-        percorrerEmOrdem(raiz->direita);
-    }
-}
-
-void percorrerPosOrdem(struct NoArvore *raiz)
-{
-    if (raiz != NULL)
-    {
-        percorrerEmOrdem(raiz->esquerda);
-        percorrerEmOrdem(raiz->direita);
-        printf("%d ", raiz->dado);
-    }
-}
-
-// Função auxiliar para imprimir um caractere precedido por uma quantidade específica de espaços
-void imprimeNo(int c, int b)
-{
-    int i;
-    for (i = 0; i < b; i++)
-        printf("   ");
-    printf("%i\n", c);
-}
-
-// Função para exibir a árvore no formato esquerda-raiz-direita segundo Sedgewick
-void mostraArvore(struct NoArvore *a, int b)
-{
-    if (a == NULL)
-    {
-        return;
-    }
-    mostraArvore(a->direita, b + 1);
-    imprimeNo(a->dado, b); // Convertendo para caractere para imprimir
-    mostraArvore(a->esquerda, b + 1);
-}
-
-int main()
-{
-    struct NoArvore *raiz = NULL;
-
-    // Inserindo elementos na árvore
-    raiz = inserir(raiz, 1);
-    raiz = inserir(raiz, 2);
-    raiz = inserir(raiz, 3);
-    raiz = inserir(raiz, 4);
-    raiz = inserir(raiz, 5);
-    raiz = inserir(raiz, 6);
-    raiz = inserir(raiz, 7);
-    raiz = inserir(raiz, 8);
-    raiz = inserir(raiz, 9);
-    raiz = inserir(raiz, 10);
-
-    mostraArvore(raiz, 3);
-    excluir(raiz,5);
-    mostraArvore(raiz,3);
-    /* Imprimindo a árvore em ordem
-    printf("\nÁrvore em pré-ordem: ");
-    percorrerPreOrdem(raiz);
-    printf("\n");
-
-    printf("Árvore em ordem: ");
-    percorrerEmOrdem(raiz);
-    printf("\n");
-
-    printf("Árvore em pós-ordem: ");
-    percorrerPosOrdem(raiz);
-    printf("\n");*/
-
-    return 0;
+  }while(opcao != 0);
+  return 0;
 }
