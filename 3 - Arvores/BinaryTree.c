@@ -10,6 +10,7 @@ typedef struct no{
 }no;
 
 no *criar_no(int num){
+    // Função responsavel pela criação do nó usada na inserção
   no *novo = (no*)malloc(sizeof(no));
   if (novo != NULL) {
       novo->num = num;
@@ -20,8 +21,9 @@ no *criar_no(int num){
 }
 
 no *inserir(no *raiz, int num){
+    //Função responsavel pela inserção 
   if (raiz == NULL){
-      return criar_no(num);
+      return criar_no(num); // Chama para criação do nó caso esteja na folha
   } else {
       if (num < raiz->num){
           raiz->esq = inserir(raiz->esq, num);
@@ -33,20 +35,22 @@ no *inserir(no *raiz, int num){
 }
 
 void pesquisa(no *raiz, int num){
+    // Busca passando pelos nos baseando-se que a arvore possui no a direita sendo o maior e menor a esquerda
   if (raiz == NULL){
-      printf("Não encontrado\n");
+      printf("Não encontrado\n"); // Se não achou
   } else {
       if (num < raiz->num){
           pesquisa(raiz->esq, num);
       } else if (num > raiz->num){
           pesquisa(raiz->dir, num);
       } else {
-          printf("Encontrado\n");
+          printf("Encontrado\n"); // Se achou
       }
   }
 }
 
 no *remover(no *raiz, int num){
+    // Passa pela arvore para remover o no 
   if (raiz == NULL){
     return raiz;
   }
@@ -55,12 +59,13 @@ no *remover(no *raiz, int num){
   } else if (num > raiz->num){
     raiz->dir = remover(raiz->dir, num);
   } else {
-    // folha
+      // parte para ajeitar a arvore apos remover o nó caso ____
+    // seja uma folha
     if (raiz->esq == NULL && raiz->dir == NULL){
       free(raiz);
       raiz = NULL;
     }
-    // 1 filho
+    // tem 1 filho
     else if (raiz->esq == NULL){
       no *temp = raiz->dir;
       free(raiz);
@@ -70,7 +75,7 @@ no *remover(no *raiz, int num){
       free(raiz);
       raiz = temp;
     }
-    // 2 filhos
+    // tem 2 filhos
     else{
       no *temp = raiz->dir;
       while (temp->esq != NULL){
@@ -84,13 +89,16 @@ no *remover(no *raiz, int num){
 }
 
 int medirAltura(no *raiz, int alt){
+    // Função para medir altura
   if (raiz == NULL){
     return -1;
   }
   else{
+      // Vai descendo a arvore ate chegar na folha
     if(raiz->esq == NULL && raiz->dir == NULL){
       return alt;
     }
+      // Da folha retorna e compara qual lado é maior e retorna ele
     int esq = medirAltura(raiz->esq, alt+1);
     int dir = medirAltura(raiz->dir, alt+1);
     if(esq > dir){
@@ -102,6 +110,7 @@ int medirAltura(no *raiz, int alt){
 }
 
 int main(void) {
+    // Menu
   no *raiz = NULL;
   int opcao, num;
   do{
