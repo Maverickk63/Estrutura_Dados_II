@@ -109,20 +109,31 @@ int medirAltura(no *raiz, int alt){
   }
 }
 
+void em_ordem(no *raiz){
+    // Função recursiva de leitura da arvore em ordem
+  if (raiz != NULL){
+    em_ordem(raiz->esq);
+    printf("%d | ", raiz->num);
+    em_ordem(raiz->dir);
+  }  // Era necessario ter uma função para ler todos os valores da arvore porem não era necessario todos os tipos de leitura (pre-ordem, pos-ordem, em ordem) então foi usado apenas um
+}
+
 int main(void) {
     // Menu
   no *raiz = NULL;
   int opcao, num;
-  do{
+  do{ // cada opção tem um numero
     printf("-----------------\n");
     printf("1 - Inserir\n");
     printf("2 - Pesquisar\n");
     printf("3 - Remover\n");
     printf("4 - Ver Altura\n");
+    printf("5 - Ler Todos os Valores em Ordem\n");
     printf("0 - Sair\n");
     printf("-----------------\n");
-    scanf("%d", &opcao);
-    if(opcao == 1){
+    scanf("%d", &opcao); // pega o numero para saber a opção escolhida
+    printf("-----------------\n");
+    if(opcao == 1){ // ifs para chamar a função escolhida
       printf("Digite um número: ");
       scanf("%d", &num);
       raiz = inserir(raiz, num);
@@ -139,6 +150,11 @@ int main(void) {
     }
     if(opcao == 4){
       printf("Altura: %d\n", medirAltura(raiz, 0));
+    }
+    if(opcao == 5){
+        printf("| ");
+        em_ordem(raiz);
+        printf("\n");
     }
   }while(opcao != 0);
   return 0;
