@@ -27,7 +27,7 @@ int main(void){
   do{
     printf("-----------------\n");
     printf("1 - Inserir\n");
-    printf("2 - Imprimir arvore\n");
+    printf("2 - Imprimir árvore\n");
     printf("3 - Remover\n");
     printf("4 - Ver Altura\n");
     printf("0 - Sair\n");
@@ -48,13 +48,13 @@ int main(void){
       raiz = remover(raiz, num);
     }
     else if(opcao == 4){
-      printf("Altura da arvore = %d \n",medirAltura(raiz, 0));
+      printf("Altura da árvore = %d \n",medirAltura(raiz, 0));
     }
   }while(opcao != 0);
   return 0;
 }
 
-// Func responsavel pela criação de novos nós q serão inseridos na arvore (inserção e uma função separada)
+// Função responsavel pela criação de novos nós que serão inseridos na árvore (inserção e uma função separada)
 no *novoNo (int num){
   no *novo = (no*)malloc(sizeof(no)); // Alocar memoria pro novo no
   novo->num = num;
@@ -67,7 +67,7 @@ no *novoNo (int num){
 // Essa função existe unica e exclusivamente para evitar erros caso em algum ponto do codigo ele tente pegar a altura de um nó que não existe
 int qualAltura (no *no){
   if (no == NULL)
-    return -1; //Nós não existentes (null apos a folha ou arvore vazia) tem altura -1
+    return -1; //Nós não existentes (null apos a folha ou árvore vazia) tem altura -1
   else
     return no->alt; // altura adquirida de forma segura
 }
@@ -81,7 +81,7 @@ int medirAltura(no *raiz, int alt){
     if(raiz->esq == NULL && raiz->dir == NULL){
       return alt;
     }
-    // Vai descendo na arvore até chegar em um nó folha
+    // Vai descendo na árvore até chegar em um nó folha
     int esq = medirAltura(raiz->esq, alt+1);
     int dir = medirAltura(raiz->dir, alt+1);
     if(esq > dir){ // Retorna o maio valor entre as alturas (se forem iguais retorna direita)
@@ -92,7 +92,7 @@ int medirAltura(no *raiz, int alt){
   }
 }
 
-//Função que realiza as rotações necessarias para balancear a arvore AVL
+//Função que realiza as rotações necessarias para balancear a árvore AVL
 no *rotacao(no *no, int lado){
   struct no *novoNo;
   struct no *subArvore;
@@ -150,17 +150,17 @@ no *aplicarAVL(no *no, int num){
     no->dir = rotacao(no->dir, 1);
     return rotacao(no, 2);
   }
-  // Caso a arvore ja esteja balanceada:
+  // Caso a árvore ja esteja balanceada:
   return no;
 }
 
-// Função basica de inserção em uma arvore binaria de busca como incremento de fazer um teste de balanceamento no final
+// Função basica de inserção em uma árvore binaria de busca como incremento de fazer um teste de balanceamento no final
 no *inserir(no *raiz, int num){
     //Função responsavel pela inserção 
   if (raiz == NULL){ // Se a raiz for nula, cria um novo nó
       return novoNo(num);
   } else
-  {// Proximo passo : caminhar pela arvore ate achar o lugar certo para inserir o novo nó
+  {// Proximo passo : caminhar pela árvore ate achar o lugar certo para inserir o novo nó
       if (num < raiz->num)
           raiz->esq = inserir(raiz->esq, num); // Menor vai para esquerda
       else if (num > raiz->num)
@@ -172,18 +172,18 @@ no *inserir(no *raiz, int num){
   return aplicarAVL(raiz, num);
 }
 
-// Função para remover um nó da arvore
+// Função para remover um nó da árvore
 no *remover(no *raiz, int num){
-    // Passa pela arvore para remover o no 
+    // Passa pela árvore para remover o no 
   if (raiz == NULL){
-    return raiz; // Voltar caso a arvore esteja vazia
+    return raiz; // Voltar caso a árvore esteja vazia
   }
   if (num < raiz->num){
     raiz->esq = remover(raiz->esq, num);
   } else if (num > raiz->num){
     raiz->dir = remover(raiz->dir, num);
   } else {
-      // parte para ajeitar a arvore apos remover o nó caso ____
+      // parte para ajeitar a árvore apos remover o nó caso ____
     // seja uma folha
     if (raiz->esq == NULL && raiz->dir == NULL){
       free(raiz);
@@ -209,12 +209,12 @@ no *remover(no *raiz, int num){
       raiz->dir = remover(raiz->dir, temp->num);
     }
   }
-  // Tudo acima é a função de remover para uma arvore de busca comum, abaixo esta a unica diferença:
+  // Tudo acima é a função de remover para uma árvore de busca comum, abaixo esta a unica diferença:
   
-  return aplicarAVL(raiz, num); // Retorna testando a arvore para garantir q ela siga as regras de balanceamento AVL
+  return aplicarAVL(raiz, num); // Retorna testando a árvore para garantir q ela siga as regras de balanceamento AVL
 }
 
-// Função para imprimir a arvore em pre ordem , com altura e filhos para verificar se esta corretamente seguindo as regras de arvore AVL
+// Função para imprimir a árvore em pre ordem , com altura e filhos para verificar se esta corretamente seguindo as regras de árvore AVL
 void printar(no *raiz){
   if (raiz == NULL)
     return;
